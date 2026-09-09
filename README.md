@@ -11,9 +11,14 @@ Paperclip adapter for OpenCode with explicit `--dir` binding (fixes `session.dir
 
 ## Install
 
+This is a local Paperclip adapter, not an npm package. Install via Paperclip CLI:
+
 ```bash
-pnpm add @zeroclue/zeroclue-opencode-adapter
+# From Paperclip repo root
+pnpm paperclipai plugin install /path/to/zeroclue-opencode-adapter
 ```
+
+The adapter is loaded from the local path. No npm publish needed.
 
 ## Usage
 
