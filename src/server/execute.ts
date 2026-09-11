@@ -46,6 +46,7 @@ import {
   readPaperclipIssueWorkModeFromContext,
   resolvePaperclipDesiredSkillNames,
 } from "@paperclipai/adapter-utils/server-utils";
+import { bootstrapGitIdentityAndCredentials } from "./git-bootstrap.js";
 import { isOpenCodeUnknownSessionError, parseOpenCodeJsonl } from "./parse.js";
 import {
   ensureOpenCodeModelConfiguredAndAvailable,
@@ -357,6 +358,15 @@ export async function execute(ctx: AdapterExecutionContext): Promise<AdapterExec
   // inherits this adapter host's PWD via env merge; keep it consistent with
   // the resolved execution cwd so nothing downstream trusts a stale PWD.
   preparedRuntimeConfig.env.PWD = cwd;
+
+  // Bootstrap per-run git identity + fresh-token credential helper (env-only).
+  // Must run after env is finalized; best-effort: warnings only, never abort.
+  await bootstrapGitIdentityAndCredentials({
+    env: preparedRuntimeConfig.env as Record<string, string>,
+    executionTargetIsRemote,
+    onLog,
+  });
+
   const localRuntimeConfigHome =
     preparedRuntimeConfig.notes.length > 0 ? preparedRuntimeConfig.env.XDG_CONFIG_HOME : "";
   try {
